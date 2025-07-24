@@ -1,0 +1,4 @@
+- [返回上一级 [weekly]](weekly/)
+- [2025.6.4-习题练习](weekly/2025.6.4-习题练习/)
+  - [assets](weekly/2025.6.4-习题练习/assets/)
+  - [index](weekly/2025.6.4-习题练习/index.md)

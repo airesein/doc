@@ -1,0 +1,3 @@
+- [返回上一级 [others]](文章/others/)
+- [部署静态笔记站](文章/others/部署静态笔记站/)
+  - [bushu](文章/others/部署静态笔记站/bushu.md)

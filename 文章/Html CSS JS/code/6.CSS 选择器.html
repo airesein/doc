@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 选择器</title>
+    <style>
+        /* 元素选择器 */
+        h2{
+            color: aqua;
+        }
+        /* 类选择器 */
+        .heighlight{
+            background-color: yellow;
+        }
+        /* id选择器 */
+        #header{
+            font-size: 55px;
+        }
+        /* 通用选择器 */
+        *{
+            font-family: 'KaiTi';
+        }
+        /* 子元素选择器 */
+        .father>.son{
+            color:brown;
+        }
+        /* 后代选择器 */
+        .father p{
+            font-size: 33px;
+            color:blue;
+        }
+        /* 相邻元素选择器 */
+        h3+p{
+            background-color: red;
+        }
+        /* 伪类选择器 */
+        #element:hover{
+            background-color: purple;
+        }
+        /* 
+        选中第一个元素:first-child
+                     :nth-child
+                     active                    
+
+        */
+
+       /* 伪元素选择器 */
+
+
+
+
+    </style>
+</head>
+<body>
+    <h1>不同类型的CSS选择器</h1>
+    <h2>这是一个元素选择器</h2>
+    <h3 class="heighlight">这是一个类选择器</h3>
+    <h3 id="header">这是一个id选择器</h3>
+    <div class="father">
+        <p class="son">这是一个子元素选择器</p>
+        <div class="grandson">
+            <p>这是一个后代选择器</p>
+        </div>
+    </div>
+
+    <p>一个p标签</p>
+    <h3>这是一个相邻兄弟选择器</h3>
+    <p>一个p标签</p>
+
+    <p id="element">这是一个伪类选择器</p>
+
+    <div class="diid">
+        
+            <p>heihie</p>
+        
+
+    </div>
+</body>
+</html>
